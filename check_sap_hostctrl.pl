@@ -23,7 +23,7 @@ my %conf = (
 	sudo 		=> "/usr/bin/sudo su - root -c",			# path to sudo command
 	sapcontrol 	=> "/usr/sap/hostctrl/exe/sapcontrol",		# path to sapcontrol binarie
 	ps			=> "/bin/ps -ef",							# path to ps command
-	usrbin		=> "/usr/bin",								# path to /usr/bin
+	usrbin		=> "/usr/bin",								# path to /usr/bin, currently used for grep/fgrep only
 	diatime		=> "5",										# timevalue for dialogprocesses, only the dialogprocesses with a runtime over 5 sec. are interrested
 	btctime		=> "1800",									# timevalue for batchprocesses, only the batchprocesses with a runtime over 1800 sec. are interrested
 	updtime		=> "30",									# timevalue for upd- and up2 processes, only the upd- and up2-processes with a runtime over 30 sec. are interrested
@@ -160,7 +160,7 @@ sub sapctrl{
 	if ( $sudo == "1")
 		{
 			#use sapcontrol on remoteinstance with sudo command
-			my $command = `ssh $host -l $user "$conf{sudo} '$conf{sapcontrol} -nr $sysnr -function GetAlertTree' | $conf{usrbin}/grep -F '$obj'"`;
+			my $command = `ssh $host -l $user "$conf{sudo} '$conf{sapcontrol} -nr $sysnr -function GetAlertTree' | $conf{usrbin}/fgrep -F '$obj'"`;
 			$rc_command = $?;
 			#print "$command\n";
 			if ( $rc_command > "0" )
@@ -183,12 +183,12 @@ sub sapctrl{
 			chomp $sap_returncode;
 			chomp $perf[1];
 			chomp $perf[2];
-			#print "obj:$monitoring_object, rc:$sap_returncode, perf_val:$perf_value"."$perf_unit\n";
+			print "obj:$monitoring_object, rc:$sap_returncode, perf_val:$perf_value"."$perf_unit\n";
 		}
 	else
 		{
 			#use sapcontrol on icinga-host
-			my $command = `$conf{sapcontrol} -host $host -nr $sysnr -function GetAlertTree | $conf{usrbin}/grep -w '$obj'`;
+			my $command = `$conf{sapcontrol} -host $host -nr $sysnr -function GetAlertTree | $conf{usrbin}/fgrep -w '$obj'`;
 			$rc_command = $?;
 			if ( $rc_command > "0" )
 				{
@@ -211,7 +211,7 @@ sub sapctrl{
 			chomp $sap_returncode;
 			chomp $perf[1];
 			chomp $perf[2];
-			#print "obj:$monitoring_object, rc:$sap_returncode, perf_val:$perf_value"."$perf_unit\n";
+			print "obj:$monitoring_object, rc:$sap_returncode, perf_val:$perf_value"."$perf_unit\n";
 		}
 	
 	
@@ -297,6 +297,11 @@ sub sapctrl_cons{
 			elsif ( $func eq "GetVersionInfo" )
 				{
 					getversioninfo();
+					#nagroutine_out();
+				}
+			else
+				{
+					outputconsfunctionreturn();
 					#nagroutine_out();
 				}			
 		}
@@ -697,6 +702,11 @@ sub abapgetwptable{
 
 
 sub getversioninfo{
+	print "OUTPUT: $command\n";
+}
+
+
+sub outputconsfunctionreturn{
 	print "OUTPUT: $command\n";
 }
 
