@@ -237,7 +237,7 @@ sub sapctrl{
 			
 			if ( $auth_grep == "0" )
 				{			
-					$command = `$conf{sapcontrol} -host $host -nr $sysnr -function GetAlertTree | $conf{usrbin}/grep -w '$obj'`;
+					$command = `$conf{sapcontrol} -host $host -nr $sysnr -function GetAlertTree | $conf{usrbin}/fgrep -w '$obj'`;
 					$rc_command = $?;
 			
 					if ( $rc_command > "0" )
@@ -248,7 +248,7 @@ sub sapctrl{
 				}
 			else
 				{
-					$command = `$conf{sapcontrol} -host $host -nr $sysnr -function GetAlertTree -user $user $pass | $conf{usrbin}/grep -w '$obj'`;
+					$command = `$conf{sapcontrol} -host $host -nr $sysnr -function GetAlertTree -user $user $pass | $conf{usrbin}/fgrep -w '$obj'`;
 					$rc_command = $?;
 			
 					if ( $rc_command > "0" )
